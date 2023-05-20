@@ -43,6 +43,22 @@ async function run() {
       res.send(result)
     })
 
+    app.post('/alltoys', async(req, res) => {
+      const addToy = req.body;
+      const result = await toyCollection.insertOne(addToy);
+      res.send(result)
+    })
+
+    app.get('/mytoys/:id', async (req, res) => {
+      console.log('inside query', req.query.email);
+      let query = {};
+      if(req.query?.email){
+        query = {email: req.query.email}
+      }
+      const result = await toyCollection.find(query).toArray();
+      res.send(result)
+    })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
@@ -56,9 +72,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-  res.send('toy wheelz is running')
+  res.send('Car wheelz is running')
 })
 
 app.listen(port, () => {
-  console.log(`Toy wheelsz server is running on the port: ${port}`)
+  console.log(`Car wheelsz server is running on the port: ${port}`)
 })
