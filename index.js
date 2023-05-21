@@ -103,7 +103,21 @@ async function run() {
       res.send(result)
     })
 
-  
+    // search 
+    app.get('/alltoys', async (req, res) => {
+      const sort = req.query.sort;
+      const search = req.query.search;
+      console.log(sort, search);
+      const query = { title: { $regex: search, $options: 'i' } }
+      const options = {
+        sort: {
+          "price": sort === 'asc' ? 1 : -1
+        }
+      };
+      const cursor = toyCollection.find(query, options);
+      const result = await cursor.toArray();
+      res.send(result);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
