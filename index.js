@@ -29,7 +29,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const toyCollection = client.db('carWheelz').collection('alltoys');
+    const toyCollection = client.db('carWheelz').collection('alltoys')
 
     app.get('/alltoys', async (req, res) => {
       const result = await toyCollection.find().toArray();
@@ -38,8 +38,14 @@ async function run() {
 
     app.get('/alltoys/:id', async (req, res) => {
       const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
+      const query = { _id: new ObjectId(id) }
       const result = await toyCollection.findOne(query);
+      res.send(result)
+    })
+
+    app.get('/toybycategory/:sub_category', async (req, res) => {
+      const id = req.params.sub_category;
+      const result = await toyCollection.find({ sub_category: id }).toArray()
       res.send(result)
     })
 
@@ -49,23 +55,55 @@ async function run() {
       res.send(result)
     })
 
-    app.get('/mytoys/:id', async (req, res) => {
+    app.get('/myToys', async (req, res) => {
       console.log('inside query', req.query.email);
-      let query = {};
+      let query = {}
       if (req.query?.email) {
         query = { email: req.query.email }
       }
-      const result = await toyCollection.find(query).toArray();
+      const result = await toyCollection.find(query).toArray()
       res.send(result)
     })
 
-    app.delete('/mytoys/:id', async (req, res) => {
+    app.get('/myToys/:id', async (req, res) => {
       const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await toyCollection.deleteOne(query);
+      const query = { _id: new ObjectId(id) }
+      const result = await toyCollection.findOne(query)
       res.send(result)
     })
 
+    // update
+    app.put('/myToys/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true }
+      const updatedToy = req.body;
+      console.log(id, updatedToy);
+      const newToy = {
+        $set: {
+          toy_name: updatedToy.toy_name,
+          sub_category: updatedToy.sub_category,
+          price: updatedToy.price,
+          rating: updatedToy.rating,
+          available_quantity: updatedToy.available_quantity,
+          toy_img: updatedToy.toy_img,
+          seller_name: updatedToy.seller_name,
+          email: updatedToy.email,
+          description: updatedToy.description
+        }
+      }
+      const result = await toyCollection.updateOne(filter, newToy, options);
+      res.send(result)
+    })
+
+    app.delete('/myToys/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await toyCollection.deleteOne(query)
+      res.send(result)
+    })
+
+  
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
@@ -79,9 +117,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-  res.send('Car wheelz is running')
+  res.send('Toy wheelz is running')
 })
 
 app.listen(port, () => {
-  console.log(`Car wheelsz server is running on the port: ${port}`)
+  console.log(`Toy wheelz server is running on the port: ${port}`)
 })
