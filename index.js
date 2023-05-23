@@ -80,21 +80,21 @@ async function run() {
       const updatedToy = req.body;
       console.log(id, updatedToy);
       const newToy = {
-        $set: {
-          toy_name: updatedToy.toy_name,
-          sub_category: updatedToy.sub_category,
-          price: updatedToy.price,
-          rating: updatedToy.rating,
-          available_quantity: updatedToy.available_quantity,
-          toy_img: updatedToy.toy_img,
-          seller_name: updatedToy.seller_name,
-          email: updatedToy.email,
-          description: updatedToy.description
-        }
+          $set: {
+              toy_name: updatedToy.toy_name,
+              sub_category: updatedToy.sub_category,
+              price: updatedToy.price,
+              rating: updatedToy.rating,
+              available_quantity: updatedToy.available_quantity,
+              toy_img: updatedToy.toy_img,
+              seller_name: updatedToy.seller_name,
+              email: updatedToy.email,
+              description: updatedToy.description
+          }
       }
       const result = await toyCollection.updateOne(filter, newToy, options);
       res.send(result)
-    })
+  })
 
     app.delete('/myToys/:id', async (req, res) => {
       const id = req.params.id;
